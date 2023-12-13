@@ -1,0 +1,89 @@
+<h2>Gauge Analysis</h2>
+<div>
+    <div style="margin: 30px;">
+        <form id="gauge-form"> 
+            <label for="fname">Search Gauge list:</label><br>
+            <input type="text" id="gauge-list-input" name="gauge_list" 
+                default="enter guage list here"
+                style="width: 100%;"
+            >            
+            <br/>
+            <p>
+                Start Date: <input type="text" id="startdatepicker"> 
+                End Date: <input type="text" id="enddatepicker">
+            </p>
+            <br/>
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+    
+    <div class="tabs"> <!-- https://jqueryui.com/tabs/ -->
+        <ul>
+          <li><a href="#tab_gauge_events">Events</a></li>
+          <li><a href="#tab_gauge_interevents">Inter Events</a></li>
+        </ul>
+        <div id="tab_gauge_events">
+            <h2>Events Data</h2>
+            <div id="gauge_table_output_01">Events Table should appear here</div>
+        </div>
+        <div id="tab_gauge_interevents">
+            <h2>Inter Events Data</h2>
+            <div id="gauge_table_output_02">Inter Events Table should appear here</div>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- Form processing logic -->
+<script>
+    $( function() {        
+        $( "#startdatepicker" ).datepicker(
+            { dateFormat: "dd/mm/yy", defaultDate: "01/01/2023" }
+        );
+        $( "#enddatepicker" ).datepicker(
+            { dateFormat: "dd/mm/yy", defaultDate: "31/12/2023" }
+        );
+    } );
+</script>
+
+<script>
+        $(document).ready(function () {
+            $("#gauge-form").submit(function (event) {
+                var formData = {
+                    gauge_list: $("#gauge-list-input").val().split(/[ ,;]+/),
+                    date_start: $("#startdatepicker").val(),
+                    date_end: $("#enddatepicker").val()
+                };
+            
+                console.log("form data:");
+                console.log(formData);
+                console.log(JSON.stringify(formData))
+
+            $.post(
+                "/search_gauges",
+                formData,
+                settings={
+                    contentType: "application/json"
+                }
+            )
+            .done(function (data) {
+                console.log("response to /search_gauges");
+                console.log(data);
+                $( "#gauge_table_output_01" ).html(data["table_events"]);
+                $( "#gauge_table_output_02" ).html(data["table_interevents"]);
+            })
+            .fail(function(e) {
+                console.log(e.status);
+                console.log(e.responseText);
+            })
+            .always(function() {
+                console.log( "finished" );
+            });
+
+            event.preventDefault();
+
+        });
+    });
+
+</script>
