@@ -3,14 +3,22 @@
     <div style="margin: 30px;">
         <!-- https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file -->
         <form id="scenario-form" method="post" enctype="multipart/form-data" 
-            target="_self"
             action="{{ url_for('analyse_scenario_files') }}">
             <div>
-              <label for="file">Choose file to upload</label>
-              <input type="file" accept=".csv" id="file" name="file" multiple />
-            </div>
-            <div>
-              <button>Submit</button>
+                <label for="file">Choose file to upload<br/>(CTRL + Click to select multiple files)</label>
+                <br/>
+                <br/>
+                <input type="file" accept=".csv" id="file_uploader" name="file" multiple />
+                <br/>
+                <ul id="file-list"></ul>
+                <br/>
+                <label for="scenario_name">Scenario Name:</label><br>
+                <input type="text" id="scenario-name" name="scenario_name" 
+                    value="Scenario 1"
+                >
+                <br/>
+                <br/>
+                <button>Submit</button>
             </div>
         </form>          
     </div>
@@ -37,7 +45,71 @@
 <!-- https://stackoverflow.com/questions/5392344/sending-multipart-formdata-with-jquery-ajax -->
 
 <script>
+
+    createDropDown = function(label, opts){
+
+        let select_e = $("<select/>");
+        select_e.addClass("file_model_format");
+
+        let options =  '<option value=""><strong>Model Format</strong></option>';
+        $(opts).each(function(i, v){ 
+            options += '<option value="'+v+'">'+v+'</option>';
+        })
+        select_e.html(options);
+        
+        list_label = $("<li/>")
+        list_label.append(
+            '<span class="file_label">'+label+'</span>',
+            select_e
+        )
+
+        return list_label;
+    };
+
     $(document).ready(function () {
+
+        $("#file_uploader").change(function(event){
+            console.log($("#file_uploader").val().split("\\").at(-1));
+
+
+            // 1. get existing files - with annotations
+            let current_files = [];         
+            $("#file-list > li > span").each(function(i, e){ 
+                current_files.push($(e).text());
+            });
+
+            // 2. get new set of files
+            var new_files = [];
+            for (var i = 0; i < $(this).get(0).files.length; ++i) {
+                new_files.push($(this).get(0).files[i].name);
+            }
+
+            // 3. Set operations - https://stackoverflow.com/a/33034768
+            // https://medium.com/@alvaro.saburido/set-theory-for-arrays-in-es6-eb2f20a61848
+            // a. files to keep; A = new  B = old
+            let files_to_add = new_files.filter(x => !current_files.includes(x));
+            // b. files to remobe
+            let files_to_remove = current_files.filter(x => !new_files.includes(x));
+
+            // 4. Remove elements in the remove list based on file name
+            $("#file-list > li > span").each(function(i, e){ 
+                if(files_to_remove.includes($(e).text())){
+                    $(e).parent().remove();
+                };
+            });
+
+            // 5. Add new elements based on file name
+            // https://stackoverflow.com/questions/40640069/dynamic-dropdown-options-with-jquery
+            var model_opts = [
+                'Bigmod - MDBA',
+                'Source - NSW (res.csv)' ,
+                'IQQM - NSW 10,000 years' 
+            ];
+
+            $(files_to_add).each(function(i, v){
+                $("#file-list").append(createDropDown(v, model_opts))
+            });
+        });
 
         $("#scenario-form").submit(function (event) {
             
@@ -48,10 +120,19 @@
             // b. throwing a 405 on post submission to "/"
             // https://stackoverflow.com/a/42517904
             event.preventDefault();
-
-
             var fileFormData = new FormData();
-            jQuery.each(jQuery('#file')[0].files, function(i, file) {
+            // // adding plain data as well: https://stackoverflow.com/a/55143036            
+            // 1. populate submission metadata 
+            file_config = {
+                scenario: $("#scenario-name").val(),
+                metadata: {}
+            };
+            $("#file-list > li").each(function(i, e){ 
+                file_config["metadata"][$(e).children("span").text()] = $(e).children("select").find(":selected").text();
+            });
+            fileFormData.append('metadata', JSON.stringify(file_config));
+            // appending files
+            jQuery.each(jQuery('#file_uploader')[0].files, function(i, file) {
                 fileFormData.append('file-'+i, file);
             });
 

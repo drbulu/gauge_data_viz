@@ -1,11 +1,33 @@
-# https://flask.palletsprojects.com/en/3.0.x/quickstart/
+import os
+import json
+import time
+import shutil
 from flask import Flask, render_template, request, Response
-
+from werkzeug.utils import secure_filename
 from datetime import datetime
 
 from py_ewr.observed_handling import ObservedHandler
 
 import plotly.graph_objects as go
+
+
+######################################################
+## App initialisation
+######################################################
+
+
+
+# initialize Flask app with the name of the file
+app = Flask(__name__)
+
+PARENT_FOLDER = os.environ.get("PARENT_FOLDER") or app.instance_path
+UPLOAD_FOLDER = os.path.join(PARENT_FOLDER, "app_data", "scenario")
+ALLOWED_EXTENSIONS = {'csv'}
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
 ######################################################
@@ -34,28 +56,21 @@ def render_plotly_table(
                align='left'))
     ])
 
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-# initialize Flask app with the name of the file
-app = Flask(__name__)
+######################################################
+## App route definition
+######################################################
+
 
 # define the url for which the application should send an http response to
 @app.route('/')
 # plain python function to handle the request
 def home_page():
     return render_template('index.html')
-
-
-
-# Data structure and filtering
-# possibly change how data is returned so that you can create filterable charts
-# https://stackoverflow.com/questions/51838992/json-data-to-plotly
-# https://plotly.com/javascript/filter/
-# filter on events: https://plotly.com/javascript/plotlyjs-events/
-
-# possible alt strategy:
-# https://blog.tensorflow.org/2020/08/introducing-danfo-js-pandas-like-library-in-javascript.html
-# https://stackoverflow.com/questions/30610675/python-pandas-equivalent-in-javascript
 
 
 @app.route('/search_gauges', methods=["POST"])
@@ -121,13 +136,38 @@ def search_gauge_observarions():
 
 
 @app.route("/analyse_scenario", methods=["POST"])
-def analyse_scenario_files():
+def analyse_scenario_files(): 
 
-    # if request.files:
-    #     print("Uploaded files:\n{}".format(request.files.keys()))
-    
-    #.
+    if request.files:
+        # 1. Create temp folder for uploaded files
+        request_tmp_folder = os.path.join(
+            app.config['UPLOAD_FOLDER'], 
+            "tmp_{}".format(str(int(time.time() * 1000)))
+        )
+        if not os.path.exists(request_tmp_folder):
+            os.makedirs(request_tmp_folder, exist_ok=True)
 
+        print("Uploaded files:\n{}".format(request.files.keys()))
+
+        form_metadata = json.loads(request.form.get("metadata"))
+        
+        print("metadata type:\n{}".format(type(form_metadata)))
+        print("metadata:\n{}".format(form_metadata))         
+
+        for file in request.files.values():
+            print("Data type is: {}".format(type(file)))
+            # print("File is: {}, contents =\n".format(file))
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                print("filename is {}".format(filename))
+                file.save(os.path.join(request_tmp_folder, filename))
+        
+        # now to use form metadata to 
+        # form_metadata
+        # {'scenario': 'Scenario 1', 'metadata': {'410130.csv': 'Bigmod - MDBA', 'a4261110.csv': 'Source - NSW (res.csv)'}}
+        # N. Remove temp folder for uploaded files - Finally
+        if os.path.exists(request_tmp_folder) and os.path.isdir(request_tmp_folder):
+            shutil.rmtree(request_tmp_folder)
     events_table_fig = None
     interevents_table_fig = None
 
@@ -136,6 +176,7 @@ def analyse_scenario_files():
         "table_interevents": "Hello inter-event!" 
     }
 
+
     # return {
     #     "table_events": events_table_fig.to_html(),
     #     "table_interevents": interevents_table_fig.to_html() 
@@ -143,7 +184,7 @@ def analyse_scenario_files():
 
 
 
-# executed the above defined Flask app 
+# executed the above defined Flask app
 if __name__ == '__main__':
     # initialize the app by invoking the Flask function run()
     app.run(debug=True)

@@ -23,6 +23,6 @@ __pycache__/
 docs/
 data/
 
-
 # Flask app related stuff
 .DS_Store
+instance/
