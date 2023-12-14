@@ -7,7 +7,9 @@ from werkzeug.utils import secure_filename
 from datetime import datetime
 
 from py_ewr.observed_handling import ObservedHandler
+from py_ewr.scenario_handling import ScenarioHandler
 
+import pandas as pd
 import plotly.graph_objects as go
 
 
@@ -149,40 +151,74 @@ def analyse_scenario_files():
 
         print("Uploaded files:\n{}".format(request.files.keys()))
 
-        form_metadata = json.loads(request.form.get("metadata"))
-        
-        print("metadata type:\n{}".format(type(form_metadata)))
-        print("metadata:\n{}".format(form_metadata))         
+        # expectinc a list of dicts: one per scenario
+        form_metadata = json.loads(request.form.get("metadata"))             
 
         for file in request.files.values():
-            print("Data type is: {}".format(type(file)))
-            # print("File is: {}, contents =\n".format(file))
             if file and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
-                print("filename is {}".format(filename))
                 file.save(os.path.join(request_tmp_folder, filename))
         
         # now to use form metadata to 
-        # form_metadata
-        # {'scenario': 'Scenario 1', 'metadata': {'410130.csv': 'Bigmod - MDBA', 'a4261110.csv': 'Source - NSW (res.csv)'}}
+        
+        
+        print(".........................................................")
+        scenario_results = dict()
+        for s in form_metadata:
+            scenario_name = s["scenario"]
+            scenario_results[scenario_name] = {
+                "table_events": [],
+                "table_interevents": []
+            }
+            for filename, model_format in s["metadata"].items():
+                print("\tscenario: {}, source file: {}, model_type: {}".format(scenario_name, filename, model_format))
+
+                ewr_sh = ScenarioHandler(
+                    scenario_file = os.path.join(request_tmp_folder, filename), 
+                    model_format = model_format
+                )
+                # process events data and add to list
+                scenario_results[scenario_name]["table_events"].append(
+                    ewr_sh.get_all_events()
+                )
+
+                scenario_results[scenario_name]["table_interevents"].append(
+                    ewr_sh.get_all_interEvents()
+                )
+            # combine scenario events
+            scenario_results[scenario_name]["table_events"] = pd.concat(
+                scenario_results[scenario_name]["table_events"], 
+                axis = 0
+            )
+            # combine scenario interevents
+            scenario_results[scenario_name]["table_interevents"] = pd.concat(
+                scenario_results[scenario_name]["table_interevents"], 
+                axis = 0
+            )
+            # create scenario visualisations
+            # a. Events - need to render as html
+            scenario_results[scenario_name]["table_events"] = render_plotly_table(
+                df=scenario_results[scenario_name]["table_events"], 
+                header_color="lightcyan", 
+                cell_color="lavender"
+            ).to_html()
+
+            # b. Inter Events - need to render as html
+            scenario_results[scenario_name]["table_interevents"] = render_plotly_table(
+                df=scenario_results[scenario_name]["table_interevents"], 
+                header_color="orange", 
+                cell_color="floralwhite"
+            ).to_html()
+        
         # N. Remove temp folder for uploaded files - Finally
         if os.path.exists(request_tmp_folder) and os.path.isdir(request_tmp_folder):
             shutil.rmtree(request_tmp_folder)
-    events_table_fig = None
-    interevents_table_fig = None
+    else:
+        scenario_results = {
+            "message": "no files provided"
+        }
 
-    return {
-        "table_events": "Hello event!",
-        "table_interevents": "Hello inter-event!" 
-    }
-
-
-    # return {
-    #     "table_events": events_table_fig.to_html(),
-    #     "table_interevents": interevents_table_fig.to_html() 
-    # }
-
-
+    return scenario_results
 
 # executed the above defined Flask app
 if __name__ == '__main__':

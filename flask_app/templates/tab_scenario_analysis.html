@@ -130,7 +130,9 @@
             $("#file-list > li").each(function(i, e){ 
                 file_config["metadata"][$(e).children("span").text()] = $(e).children("select").find(":selected").text();
             });
-            fileFormData.append('metadata', JSON.stringify(file_config));
+            // note: catering for future use cases where scenario comparison might be valid.
+            file_config_list = [file_config];
+            fileFormData.append('metadata', JSON.stringify(file_config_list));
             // appending files
             jQuery.each(jQuery('#file_uploader')[0].files, function(i, file) {
                 fileFormData.append('file-'+i, file);
