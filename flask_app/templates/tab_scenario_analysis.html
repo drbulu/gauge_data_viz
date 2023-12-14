@@ -51,7 +51,8 @@
         let select_e = $("<select/>");
         select_e.addClass("file_model_format");
 
-        let options =  '<option value=""><strong>Model Format</strong></option>';
+        // let options =  '<option value=""><strong>Model Format</strong></option>';
+        let options =  '';
         $(opts).each(function(i, v){ 
             options += '<option value="'+v+'">'+v+'</option>';
         })
@@ -69,9 +70,6 @@
     $(document).ready(function () {
 
         $("#file_uploader").change(function(event){
-            console.log($("#file_uploader").val().split("\\").at(-1));
-
-
             // 1. get existing files - with annotations
             let current_files = [];         
             $("#file-list > li > span").each(function(i, e){ 
@@ -149,8 +147,30 @@
                 success: function(data){
                     console.log("response to /analyse_scenario");
                     console.log(data);
-                    $( "#scenario_table_output_01" ).html(data["table_events"]);
-                    $( "#scenario_table_output_02" ).html(data["table_interevents"]);
+                    // Data processing
+                    $(data).each(function(i, v){
+                        let heading_scenario = $("<h3>Scenario Name: "+v["scenario_name"]+"</h3>");
+                        
+                        // clear UI before addign new data
+                        $("#scenario_table_output_01").empty();
+                        $("#scenario_table_output_02").empty();
+                        // update events UI
+                        $("#scenario_table_output_01").append(
+                            heading_scenario.clone()
+                        );
+                        $("#scenario_table_output_01").append(
+                            "<div>"+v["table_events"]+"</div>"
+                        );
+                        // update interevents UI
+                        $("#scenario_table_output_02").append(
+                            heading_scenario.clone()
+                        );
+                        $("#scenario_table_output_02").append(
+                            "<div>"+v["table_interevents"]+"</div>"
+                        );
+                    });
+ 
+
                 },
                 error: function(e) {
                     console.log(e.status);

@@ -163,62 +163,64 @@ def analyse_scenario_files():
         
         
         print(".........................................................")
-        scenario_results = dict()
+        scenario_results_list = list()
         for s in form_metadata:
-            scenario_name = s["scenario"]
-            scenario_results[scenario_name] = {
+            scenario_results = {
+                "scenario_name": s["scenario"],
                 "table_events": [],
                 "table_interevents": []
             }
             for filename, model_format in s["metadata"].items():
-                print("\tscenario: {}, source file: {}, model_type: {}".format(scenario_name, filename, model_format))
-
+                # 1. process scenario file                
                 ewr_sh = ScenarioHandler(
                     scenario_file = os.path.join(request_tmp_folder, filename), 
                     model_format = model_format
                 )
                 # process events data and add to list
-                scenario_results[scenario_name]["table_events"].append(
+                scenario_results["table_events"].append(
                     ewr_sh.get_all_events()
                 )
 
-                scenario_results[scenario_name]["table_interevents"].append(
+                scenario_results["table_interevents"].append(
                     ewr_sh.get_all_interEvents()
                 )
             # combine scenario events
-            scenario_results[scenario_name]["table_events"] = pd.concat(
-                scenario_results[scenario_name]["table_events"], 
+            scenario_results["table_events"] = pd.concat(
+                scenario_results["table_events"], 
                 axis = 0
             )
             # combine scenario interevents
-            scenario_results[scenario_name]["table_interevents"] = pd.concat(
-                scenario_results[scenario_name]["table_interevents"], 
+            scenario_results["table_interevents"] = pd.concat(
+                scenario_results["table_interevents"], 
                 axis = 0
             )
             # create scenario visualisations
             # a. Events - need to render as html
-            scenario_results[scenario_name]["table_events"] = render_plotly_table(
-                df=scenario_results[scenario_name]["table_events"], 
+            scenario_results["table_events"] = render_plotly_table(
+                df=scenario_results["table_events"], 
                 header_color="lightcyan", 
                 cell_color="lavender"
             ).to_html()
 
             # b. Inter Events - need to render as html
-            scenario_results[scenario_name]["table_interevents"] = render_plotly_table(
-                df=scenario_results[scenario_name]["table_interevents"], 
+            scenario_results["table_interevents"] = render_plotly_table(
+                df=scenario_results["table_interevents"], 
                 header_color="orange", 
                 cell_color="floralwhite"
             ).to_html()
+            
+            # append results to list
+            scenario_results_list.append(scenario_results)
         
         # N. Remove temp folder for uploaded files - Finally
         if os.path.exists(request_tmp_folder) and os.path.isdir(request_tmp_folder):
             shutil.rmtree(request_tmp_folder)
     else:
-        scenario_results = {
+        scenario_results_list = [{
             "message": "no files provided"
-        }
+        }]
 
-    return scenario_results
+    return scenario_results_list
 
 # executed the above defined Flask app
 if __name__ == '__main__':
