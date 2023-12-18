@@ -28,6 +28,9 @@ ALLOWED_EXTENSIONS = {'csv'}
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+# disable autosorting of JSON objects in response: https://stackoverflow.com/a/60780210
+app.json.sort_keys = False
+
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
@@ -91,7 +94,7 @@ def search_gauge_observarions():
     print("getting form list data...")
     print(gauge_query_list)
 
-    # remove duplicate entries
+    # remove duplicate entries 
     gauge_query_list = list(set(gauge_query_list))
     print(gauge_query_list)
 
@@ -116,26 +119,15 @@ def search_gauge_observarions():
         .format(", ".join(gauge_query_list))
     )
     ewr_oh = ObservedHandler(gauges=gauge_query_list, dates=date_range)
-    print("query complete!")
-
-    # 1. getting all events
-    events_table_fig = render_plotly_table(
-        df=ewr_oh.get_all_events(), 
-        header_color="lightcyan", 
-        cell_color="lavender"
-    )
-
-    interevents_table_fig = render_plotly_table(
-        df=ewr_oh.get_all_interEvents(), 
-        header_color="orange", 
-        cell_color="floralwhite"
-    )
+    print("query complete!")    
     
+    # if the flask app column ordering fix doesn't work on records
+    # rename startDate and endDate to dateStart and dateEnd
     return {
-        "table_events": events_table_fig.to_html(),
-        "table_interevents": interevents_table_fig.to_html() 
-    }
-
+        "table_events": ewr_oh.get_all_events().to_dict(orient='records'),
+        "table_interevents": ewr_oh.get_all_interEvents().to_dict(orient='records')
+    } 
+    
 
 @app.route("/analyse_scenario", methods=["POST"])
 def analyse_scenario_files(): 
@@ -194,20 +186,10 @@ def analyse_scenario_files():
                 scenario_results["table_interevents"], 
                 axis = 0
             )
-            # create scenario visualisations
-            # a. Events - need to render as html
-            scenario_results["table_events"] = render_plotly_table(
-                df=scenario_results["table_events"], 
-                header_color="lightcyan", 
-                cell_color="lavender"
-            ).to_html()
 
-            # b. Inter Events - need to render as html
-            scenario_results["table_interevents"] = render_plotly_table(
-                df=scenario_results["table_interevents"], 
-                header_color="orange", 
-                cell_color="floralwhite"
-            ).to_html()
+            # extract records
+            scenario_results["table_events"] = scenario_results["table_events"].to_dict(orient='records')
+            scenario_results["table_interevents"] = scenario_results["table_interevents"].to_dict(orient='records')
             
             # append results to list
             scenario_results_list.append(scenario_results)

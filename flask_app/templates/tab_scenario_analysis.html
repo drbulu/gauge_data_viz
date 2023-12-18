@@ -154,20 +154,32 @@
                         // clear UI before addign new data
                         $("#scenario_table_output_01").empty();
                         $("#scenario_table_output_02").empty();
+
                         // update events UI
+                        const guage_table_events_id = "gauge_table_events" + i;
                         $("#scenario_table_output_01").append(
                             heading_scenario.clone()
-                        );
+                        );                                                                 
                         $("#scenario_table_output_01").append(
-                            "<div>"+v["table_events"]+"</div>"
+                            createTableHTML(
+                                json_data=v["table_events"], 
+                                table_id=guage_table_events_id
+                            )
                         );
+                        convertHTMLTableToDataTableFiltered(table_id=guage_table_events_id);
+
                         // update interevents UI
+                        const guage_table_interevents_id = "gauge_table_interevents" + i;
                         $("#scenario_table_output_02").append(
                             heading_scenario.clone()
                         );
                         $("#scenario_table_output_02").append(
-                            "<div>"+v["table_interevents"]+"</div>"
+                            createTableHTML(
+                                json_data=v["table_interevents"], 
+                                table_id=guage_table_interevents_id
+                            )
                         );
+                        convertHTMLTableToDataTableFiltered(table_id=guage_table_interevents_id);
                     });
  
 

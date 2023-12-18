@@ -24,11 +24,15 @@
         </ul>
         <div id="tab_gauge_events">
             <h2>Events Data</h2>
-            <div id="gauge_table_output_01">Events Table should appear here</div>
+            <div id="gauge_table_output_01" class="table-wrapper">
+                Events Table should appear here
+            </div>
         </div>
         <div id="tab_gauge_interevents">
             <h2>Inter Events Data</h2>
-            <div id="gauge_table_output_02">Inter Events Table should appear here</div>
+            <div id="gauge_table_output_02" class="table-wrapper">
+                Inter Events Table should appear here
+            </div>
         </div>
     </div>
 
@@ -41,9 +45,12 @@
         $( "#startdatepicker" ).datepicker(
             { dateFormat: "dd/mm/yy", defaultDate: "01/01/2023" }
         );
+        $( "#startdatepicker" ).val("01/01/2023");
+
         $( "#enddatepicker" ).datepicker(
             { dateFormat: "dd/mm/yy", defaultDate: "31/12/2023" }
         );
+        $( "#enddatepicker" ).val("31/12/2023");
     } );
 </script>
 
@@ -70,15 +77,27 @@
             .done(function (data) {
                 console.log("response to /search_gauges");
                 console.log(data);
-                $( "#gauge_table_output_01" ).html(data["table_events"]);
-                $( "#gauge_table_output_02" ).html(data["table_interevents"]);
+
+                const guage_table_events_id = "gauge_table_events";
+                const guage_table_interevents_id = "gauge_table_interevents";
+
+                $("#gauge_table_output_01").html(
+                    createTableHTML(json_data=data["table_events"], table_id=guage_table_events_id)
+                );
+                convertHTMLTableToDataTableFiltered(table_id=guage_table_events_id);
+
+                $("#gauge_table_output_02").html(
+                    createTableHTML(json_data=data["table_interevents"], table_id=guage_table_interevents_id)
+                );
+                convertHTMLTableToDataTableFiltered(table_id=guage_table_interevents_id);
+
             })
             .fail(function(e) {
                 console.log(e.status);
                 console.log(e.responseText);
             })
             .always(function() {
-                console.log( "finished" );
+                
             });
 
             event.preventDefault();
