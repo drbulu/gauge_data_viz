@@ -38,6 +38,10 @@ if not os.path.exists(UPLOAD_FOLDER):
 ## Helper functions
 ######################################################
 
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 ######################################################
 ## App route definition
@@ -49,6 +53,31 @@ if not os.path.exists(UPLOAD_FOLDER):
 # plain python function to handle the request
 def home_page():
     return render_template('index.html')
+
+
+@app.route('/definition_tables', methods=["GET", "POST"])
+def description_table():
+    dfn_df = pd.read_csv(
+        os.path.join(
+            app.root_path, 
+            "static",
+            "csv",
+            "MDBA-EWR_category_definition_table.csv"
+        )
+    )
+    desc_df = pd.read_csv(
+        os.path.join(
+            app.root_path, 
+            "static",
+            "csv",
+            "MDBA-EWR_description_table.csv"
+        )
+    )
+    desc_df["LTWP Area"] = desc_df["LTWP Area"].fillna("All LTWP Areas")
+    return {
+        "table_definitions": dfn_df.to_dict(orient='records'),
+        "table_descriptions": desc_df.to_dict(orient='records')
+    }
 
 
 @app.route('/search_gauges', methods=["POST"])
@@ -124,10 +153,6 @@ def analyse_scenario_files():
                 filename = secure_filename(file.filename)
                 file.save(os.path.join(request_tmp_folder, filename))
         
-        # now to use form metadata to 
-        
-        
-        print(".........................................................")
         scenario_results_list = list()
         for s in form_metadata:
             scenario_results = {
