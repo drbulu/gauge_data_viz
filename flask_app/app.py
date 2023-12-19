@@ -39,32 +39,6 @@ if not os.path.exists(UPLOAD_FOLDER):
 ######################################################
 
 
-# https://developer.mozilla.org/en-US/docs/Web/CSS/color_value
-def render_plotly_table(
-        df, 
-        header_color="green", 
-        cell_color: str="lavender"
-    ):
-
-    # format input data for plotly table
-    columns = df.columns.tolist()
-    values = [df[c].tolist() for c in df.columns]
-
-    # return plotly table as figure
-    return go.Figure(data=[go.Table(
-        header=dict(values=columns,
-                fill_color=header_color,
-                align='left'),
-        cells=dict(values=values,
-               fill_color=cell_color,
-               align='left'))
-    ])
-
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-
 ######################################################
 ## App route definition
 ######################################################
