@@ -1,3 +1,2 @@
-Flask==3.0.0
-plotly==5.18.0
+Flask>=3.0.0
 py-ewr==2.1.0

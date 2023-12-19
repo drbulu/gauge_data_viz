@@ -10,7 +10,6 @@ from py_ewr.observed_handling import ObservedHandler
 from py_ewr.scenario_handling import ScenarioHandler
 
 import pandas as pd
-import plotly.graph_objects as go
 
 
 ######################################################
