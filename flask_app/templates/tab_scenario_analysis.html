@@ -28,13 +28,67 @@
           <li><a href="#tab_scenario_events">Events</a></li>
           <li><a href="#tab_scenario_interevents">Inter Events</a></li>
         </ul>
+
+        <div style="width: 100%; border: thick double">
+            <br/>
+            <label for="scenario_result_menu" style="margin-right: 0px 10px 0px 10px;">
+                Scenario:
+            </label>
+            <select name="scenario_result_menu" id="scenario_result_menu">
+            </select>
+            <br/>
+            <br/>
+        </div> 
+                
         <div id="tab_scenario_events">
             <h2>Events Data</h2>
-            <div id="scenario_table_output_01">Events Table should appear here</div>
+            <!-- Nested tabs -->
+            <div class="tabs"> <!-- https://jqueryui.com/tabs/ -->
+                <ul>
+                  <li><a href="#tab_scenario_events_chart">Chart View</a></li>
+                  <li><a href="#tab_scenario_events_table">Table View</a></li>
+                </ul>
+                <div id="tab_scenario_events_chart">
+                    <h2>Time Series</h2>
+                    <div id="scenario_events_graph_output_ts" class="table-wrapper"></div>
+                    <br/>
+                    <h2>Bar Chart</h2>
+                    <div id="scenario_interevents_graph_output_bar" class="table-wrapper"></div>
+                    <br/>
+                </div>
+                <div id="tab_scenario_events_table">
+                    <h2>Tabular Data</h2>
+                    <div id="scenario_events_table_output" class="table-wrapper">
+                        Inter Events Table should appear here
+                    </div>
+                </div>
+            </div>
+
         </div>
         <div id="tab_scenario_interevents">
             <h2>Inter Events Data</h2>
-            <div id="scenario_table_output_02">Inter Events Table should appear here</div>
+            <!-- Nested tabs -->
+            <div class="tabs"> <!-- https://jqueryui.com/tabs/ -->
+                <ul>
+                  <li><a href="#tab_scenario_interevents_chart">Chart View</a></li>
+                  <li><a href="#tab_scenario_interevents_table">Table View</a></li>
+                </ul>
+                <div id="tab_scenario_interevents_chart">
+                    <h2>Time Series</h2>
+                    <div id="scenario_interevents_graph_output_ts" class="table-wrapper"></div>
+                    <br/>
+                    <h2>Bar Chart</h2>
+                    <div id="scenario_interevents_graph_output_bar" class="table-wrapper"></div>
+                    <br/>
+                </div>
+                <div id="tab_scenario_interevents_table">
+                    <h2>Tabular Data</h2>
+                    <div id="scenario_interevents_table_output" class="table-wrapper">
+                        Inter Events Table should appear here
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 

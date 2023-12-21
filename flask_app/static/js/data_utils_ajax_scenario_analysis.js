@@ -106,15 +106,15 @@ $(document).ready(function () {
                     let heading_scenario = $("<h3>Scenario Name: "+v["scenario_name"]+"</h3>");
                     
                     // clear UI before addign new data
-                    $("#scenario_table_output_01").empty();
-                    $("#scenario_table_output_02").empty();
+                    $("#scenario_events_table_output").empty();
+                    $("#scenario_interevents_table_output").empty();
 
                     // update events UI
                     const guage_table_events_id = "gauge_table_events" + i;
-                    $("#scenario_table_output_01").append(
+                    $("#scenario_events_table_output").append(
                         heading_scenario.clone()
                     );                                                                 
-                    $("#scenario_table_output_01").append(
+                    $("#scenario_events_table_output").append(
                         createTableHTML(
                             json_data=v["table_events"], 
                             table_id=guage_table_events_id
@@ -124,10 +124,10 @@ $(document).ready(function () {
 
                     // update interevents UI
                     const guage_table_interevents_id = "gauge_table_interevents" + i;
-                    $("#scenario_table_output_02").append(
+                    $("#scenario_interevents_table_output").append(
                         heading_scenario.clone()
                     );
-                    $("#scenario_table_output_02").append(
+                    $("#scenario_interevents_table_output").append(
                         createTableHTML(
                             json_data=v["table_interevents"], 
                             table_id=guage_table_interevents_id
