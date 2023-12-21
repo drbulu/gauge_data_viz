@@ -7,12 +7,22 @@
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
     <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
 
+
+    <!-- EWR Query handling -->
+    <script src="{{ url_for('static', filename='js/data_utils_ajax_gauge_analysis.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/data_utils_ajax_scenario_analysis.js') }}"></script>
     <!-- DataTable -->
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>    
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/3.2.3/css/fixedHeader.dataTables.min.css">
     <!-- DataTable utils -->
     <script src="{{ url_for('static', filename='js/data_utils_viz_table.js') }}"></script>
+    <!-- Vega-Lite Viz -->
+    <script src="https://cdn.jsdelivr.net/npm/vega@5.26.1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.16.3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.23.0"></script>
+    <!-- Vega-Lite utils -->
+    <script src="{{ url_for('static', filename='js/data_utils_viz_graph.js') }}"></script>
 
     <script>
         $( function() {
