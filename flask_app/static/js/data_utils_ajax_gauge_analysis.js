@@ -37,20 +37,31 @@ $(document).ready(function () {
                 const guage_table_interevents_id = "gauge_table_interevents";
 
                 // Convert to loop
-                $("#table_output_gauge_events").html(
-                    createTableHTML(json_data = data["table_events"], table_id = guage_table_events_id)
-                );
-                convertHTMLTableToDataTableFiltered(table_id = guage_table_events_id);
-
-                $("#table_output_gauge_interevents").html(
-                    createTableHTML(json_data = data["table_interevents"], table_id = guage_table_interevents_id)
-                );
-                convertHTMLTableToDataTableFiltered(table_id = guage_table_interevents_id);
-
-                // https://datatables.net/reference/event/search
-                $("#" + guage_table_events_id).on("change", function () {
-                    console.log("Event table changed!");
+                $.each(data, function(k, v) {
+                    // guage_table_events_id=gauge_table_events
+                    data_table_id = "table_gauge_" + k;
+                    $("#output_table_gauge_" + k).html(
+                        createTableHTML(
+                            json_data = v, 
+                            table_id = data_table_id
+                        )
+                    );
+                    convertHTMLTableToDataTableFiltered(table_id = data_table_id);
                 });
+                // $("#output_table_gauge_events").html(
+                //     createTableHTML(json_data = data["table_events"], table_id = guage_table_events_id)
+                // );
+                // convertHTMLTableToDataTableFiltered(table_id = guage_table_events_id);
+
+                // $("#output_table_gauge_interevents").html(
+                //     createTableHTML(json_data = data["table_interevents"], table_id = guage_table_interevents_id)
+                // );
+                // convertHTMLTableToDataTableFiltered(table_id = guage_table_interevents_id);
+
+                // // https://datatables.net/reference/event/search
+                // $("#" + guage_table_events_id).on("change", function () {
+                //     console.log("Event table changed!");
+                // });
 
             })
             .fail(function (e) {

@@ -125,14 +125,27 @@ def search_gauge_observarions():
     
     # if the flask app column ordering fix doesn't work on records
     # rename startDate and endDate to dateStart and dateEnd
-    return {
-        "table_events": ewr_oh.get_all_events().to_dict(orient='records'),
-        "table_interevents": ewr_oh.get_all_interEvents().to_dict(orient='records')
-    } 
+
+    gauge_results = dict()
+
+    result_call_config = {
+        "ewr_results": ewr_oh.get_ewr_results,
+        "ewr_yearly_results": ewr_oh.get_yearly_ewr_results,
+        "events": ewr_oh.get_all_events,
+        "interevents": ewr_oh.get_all_interEvents,
+        "successful_events": ewr_oh.get_all_successful_events,
+        "successful_interEvents": ewr_oh.get_all_successful_interEvents,
+    }
+    # process events data and add to list
+    for k, v in result_call_config.items():
+        data_output = v()        
+        gauge_results[k] = data_output.to_dict(orient='records')
+
+    return gauge_results
     
 
 @app.route("/analyse_scenario", methods=["POST"])
-def analyse_scenario_files(): 
+def analyse_scenario_files():
 
     if request.files:
         # 1. Create temp folder for uploaded files
