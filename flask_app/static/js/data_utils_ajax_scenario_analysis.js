@@ -105,6 +105,13 @@ $(document).ready(function () {
                 $(data).each(function(i, v){
                     let heading_scenario = $("<h3>Scenario Name: "+v["scenario_name"]+"</h3>");
                     
+                    // reset dropdown menu
+                    $("#scenario_results_menu").empty();
+                    $("#scenario_results_menu").append(
+                        '<option value="'+i+'">'+v["scenario_name"]+'</option>'
+                    );
+
+
                     // clear UI before addign new data
                     $("#scenario_events_table_output").empty();
                     $("#scenario_interevents_table_output").empty();
@@ -135,8 +142,7 @@ $(document).ready(function () {
                     );
                     convertHTMLTableToDataTableFiltered(table_id=guage_table_interevents_id);
                 });
-
-
+                
             },
             error: function(e) {
                 console.log(e.status);
