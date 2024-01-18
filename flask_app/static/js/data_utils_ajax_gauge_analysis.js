@@ -36,12 +36,13 @@ $(document).ready(function () {
                 const guage_table_events_id = "gauge_table_events";
                 const guage_table_interevents_id = "gauge_table_interevents";
 
-                $("#gauge_events_table_output").html(
+                // Convert to loop
+                $("#table_output_gauge_events").html(
                     createTableHTML(json_data = data["table_events"], table_id = guage_table_events_id)
                 );
                 convertHTMLTableToDataTableFiltered(table_id = guage_table_events_id);
 
-                $("#gauge_interevents_table_output").html(
+                $("#table_output_gauge_interevents").html(
                     createTableHTML(json_data = data["table_interevents"], table_id = guage_table_interevents_id)
                 );
                 convertHTMLTableToDataTableFiltered(table_id = guage_table_interevents_id);
