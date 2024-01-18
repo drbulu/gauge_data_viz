@@ -103,46 +103,34 @@ $(document).ready(function () {
                 console.log(data);
                 // Data processing
                 $(data).each(function(i, v){
-                    let heading_scenario = $("<h3>Scenario Name: "+v["scenario_name"]+"</h3>");
-                    
-                    // reset dropdown menu
-                    $("#scenario_results_menu").empty();
-                    $("#scenario_results_menu").append(
-                        '<option value="'+i+'">'+v["scenario_name"]+'</option>'
-                    );
+                    $("#label_scenario_name").val(v["scenario_name"])
 
-
+                    // TODO -- conver to loop 
                     // clear UI before addign new data
-                    $("#scenario_events_table_output").empty();
-                    $("#scenario_interevents_table_output").empty();
+                    $("#table_output_scenario_events").empty();
+                    $("#table_output_scenario_interevents").empty();
 
                     // update events UI
-                    const guage_table_events_id = "gauge_table_events" + i;
-                    $("#scenario_events_table_output").append(
-                        heading_scenario.clone()
-                    );                                                                 
-                    $("#scenario_events_table_output").append(
+                    const scenario_table_events_id = "scenario_table_events" + i;              
+                    $("#table_output_scenario_events").html(
                         createTableHTML(
                             json_data=v["table_events"], 
-                            table_id=guage_table_events_id
+                            table_id=scenario_table_events_id
                         )
                     );
-                    convertHTMLTableToDataTableFiltered(table_id=guage_table_events_id);
+                    convertHTMLTableToDataTableFiltered(table_id=scenario_table_events_id);
 
                     // update interevents UI
-                    const guage_table_interevents_id = "gauge_table_interevents" + i;
-                    $("#scenario_interevents_table_output").append(
-                        heading_scenario.clone()
-                    );
-                    $("#scenario_interevents_table_output").append(
+                    const scenario_table_interevents_id = "scenario_table_interevents" + i;
+                    $("#table_output_scenario_interevents").html(
                         createTableHTML(
                             json_data=v["table_interevents"], 
                             table_id=guage_table_interevents_id
                         )
                     );
-                    convertHTMLTableToDataTableFiltered(table_id=guage_table_interevents_id);
+                    convertHTMLTableToDataTableFiltered(table_id=scenario_table_interevents_id);
                 });
-                
+
             },
             error: function(e) {
                 console.log(e.status);
