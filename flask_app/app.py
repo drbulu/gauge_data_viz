@@ -169,9 +169,6 @@ def analyse_scenario_files():
         scenario_results_list = list()
         for s in form_metadata:
             scenario_results = {
-                # "scenario_name": s["scenario"],
-                # "table_events": [],
-                # "table_interevents": []
                 "ewr_results": [],
                 "ewr_yearly_results": [],
                 "events": [],
@@ -199,40 +196,20 @@ def analyse_scenario_files():
                 for k, v in result_call_config.items():                    
                     scenario_results[k].append(v())
 
-                # # process events data and add to list
-                # scenario_results["table_events"].append(
-                #     ewr_sh.get_all_events()
-                # )
-
-                # scenario_results["table_interevents"].append(
-                #     ewr_sh.get_all_interEvents()
-                # )            
             for k, v in scenario_results.items():
                 # combine scenario events
                 scenario_results[k] = pd.concat(v, axis = 0)
-            # scenario_results["table_events"] = pd.concat(
-            #     scenario_results["table_events"], 
-            #     axis = 0
-            # )
-            # # combine scenario interevents
-            # scenario_results["table_interevents"] = pd.concat(
-            #     scenario_results["table_interevents"], 
-            #     axis = 0
-            # )
 
-            # # extract records
-            for k, v in scenario_results.items():                
-                # extract records
+            # extract records
+            for k, v in scenario_results.items():
                 scenario_results[k] = scenario_results[k].to_dict(orient='records')
-            # scenario_results["table_events"] = scenario_results["table_events"].to_dict(orient='records')
-            # scenario_results["table_interevents"] = scenario_results["table_interevents"].to_dict(orient='records')
-            
+                            
             # Add scenario_name to results. Important to do AFTER data 
             # processing for simpler, more predictable data processing 
             # logic. "scenario_name" causes pd.concat to fail if not
             # otherwise handled.
             scenario_results["scenario_name"] = s["scenario"]
-            
+
             # append results to list            
             scenario_results_list.append(scenario_results)
         
