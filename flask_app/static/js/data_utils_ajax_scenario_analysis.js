@@ -99,14 +99,12 @@ $(document).ready(function () {
             method: 'POST',
             type: 'POST', // For jQuery < 1.9
             success: function(data){
-                console.log("response to /analyse_scenario");
-                console.log(data);
                 // Data processing
-                $(data).each(function(i, scenario_data){
-                    
-                    // TODO -- conver to loop 
-                    $.each(scenario_data, function(k, v) {
-                        
+                $(data).each(function(i, scenario_data){                    
+                    // Assumes that a list of scenarios even though the UI 
+                    // only supports one scenario, non-interactive options 
+                    // could feasibly support batch processing.
+                    $.each(scenario_data, function(k, v) {                        
                         if (k === "scenario_name" ){
                             $("#label_scenario_name").val(scenario_data[k]);
                         } else {
@@ -122,36 +120,7 @@ $(document).ready(function () {
                             convertHTMLTableToDataTableFiltered(table_id=data_table_id);
                         };                        
                     });
-
-                    // // Old Code rena
-                    // $("#label_scenario_name").val(scenario_data["scenario_name"])
-
-                    
-                    // // clear UI before addign new data
-                    // $("#table_output_scenario_events").empty();
-                    // $("#table_output_scenario_interevents").empty();
-
-                    // // update events UI
-                    // const scenario_table_events_id = "scenario_table_events" + i;              
-                    // $("#table_output_scenario_events").html(
-                    //     createTableHTML(
-                    //         json_data=scenario_data["table_events"], 
-                    //         table_id=scenario_table_events_id
-                    //     )
-                    // );
-                    // convertHTMLTableToDataTableFiltered(table_id=scenario_table_events_id);
-
-                    // // update interevents UI
-                    // const scenario_table_interevents_id = "scenario_table_interevents" + i;
-                    // $("#table_output_scenario_interevents").html(
-                    //     createTableHTML(
-                    //         json_data=v["table_interevents"], 
-                    //         table_id=guage_table_interevents_id
-                    //     )
-                    // );
-                    // convertHTMLTableToDataTableFiltered(table_id=scenario_table_interevents_id);
                 });
-
             },
             error: function(e) {
                 console.log(e.status);

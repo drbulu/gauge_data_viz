@@ -18,10 +18,6 @@ $(document).ready(function () {
             date_end: $("#enddatepicker").val()
         };
 
-        console.log("form data:");
-        console.log(formData);
-        console.log(JSON.stringify(formData))
-
         $.post(
             "/search_gauges",
             formData,
@@ -30,9 +26,6 @@ $(document).ready(function () {
             }
         )
             .done(function (data) {
-                console.log("response to /search_gauges");
-                console.log(data);
-
                 const guage_table_events_id = "gauge_table_events";
                 const guage_table_interevents_id = "gauge_table_interevents";
 
@@ -48,21 +41,6 @@ $(document).ready(function () {
                     );
                     convertHTMLTableToDataTableFiltered(table_id = data_table_id);
                 });
-                // $("#output_table_gauge_events").html(
-                //     createTableHTML(json_data = data["table_events"], table_id = guage_table_events_id)
-                // );
-                // convertHTMLTableToDataTableFiltered(table_id = guage_table_events_id);
-
-                // $("#output_table_gauge_interevents").html(
-                //     createTableHTML(json_data = data["table_interevents"], table_id = guage_table_interevents_id)
-                // );
-                // convertHTMLTableToDataTableFiltered(table_id = guage_table_interevents_id);
-
-                // // https://datatables.net/reference/event/search
-                // $("#" + guage_table_events_id).on("change", function () {
-                //     console.log("Event table changed!");
-                // });
-
             })
             .fail(function (e) {
                 console.log(e.status);

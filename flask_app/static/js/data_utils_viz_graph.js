@@ -90,16 +90,3 @@ var renderVegaliteChart = function (
     // render visualisation.
     vegaEmbed("#" + chart_id, chart_spec, { mode: "vega-lite" });
 };
-
-
-/*
-
-var chart_data = collectDataFromDataTableByID(table_id = "gauge_table_events", select_filtered = false);
-
-renderVegaliteChart(
-    chart_id="gauge_events_graph_output_ts", 
-    chart_y_var="eventDuration",
-    chart_data=chart_data, 
-    is_bar_chart=false
-);
-*/
