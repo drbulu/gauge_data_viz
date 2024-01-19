@@ -102,33 +102,54 @@ $(document).ready(function () {
                 console.log("response to /analyse_scenario");
                 console.log(data);
                 // Data processing
-                $(data).each(function(i, v){
-                    $("#label_scenario_name").val(v["scenario_name"])
-
+                $(data).each(function(i, scenario_data){
+                    
                     // TODO -- conver to loop 
-                    // clear UI before addign new data
-                    $("#table_output_scenario_events").empty();
-                    $("#table_output_scenario_interevents").empty();
+                    $.each(scenario_data, function(k, v) {
+                        
+                        if (k === "scenario_name" ){
+                            $("#label_scenario_name").val(scenario_data[k]);
+                        } else {
+                            let table_div_id = "#output_table_scenario_" + k;
+                            let data_table_id = "table_scenario_" + k;
+                            $(table_div_id).empty();
+                            $(table_div_id).html(
+                                createTableHTML(
+                                    json_data = v, 
+                                    table_id = data_table_id
+                                )
+                            );
+                            convertHTMLTableToDataTableFiltered(table_id=data_table_id);
+                        };                        
+                    });
 
-                    // update events UI
-                    const scenario_table_events_id = "scenario_table_events" + i;              
-                    $("#table_output_scenario_events").html(
-                        createTableHTML(
-                            json_data=v["table_events"], 
-                            table_id=scenario_table_events_id
-                        )
-                    );
-                    convertHTMLTableToDataTableFiltered(table_id=scenario_table_events_id);
+                    // // Old Code rena
+                    // $("#label_scenario_name").val(scenario_data["scenario_name"])
 
-                    // update interevents UI
-                    const scenario_table_interevents_id = "scenario_table_interevents" + i;
-                    $("#table_output_scenario_interevents").html(
-                        createTableHTML(
-                            json_data=v["table_interevents"], 
-                            table_id=guage_table_interevents_id
-                        )
-                    );
-                    convertHTMLTableToDataTableFiltered(table_id=scenario_table_interevents_id);
+                    
+                    // // clear UI before addign new data
+                    // $("#table_output_scenario_events").empty();
+                    // $("#table_output_scenario_interevents").empty();
+
+                    // // update events UI
+                    // const scenario_table_events_id = "scenario_table_events" + i;              
+                    // $("#table_output_scenario_events").html(
+                    //     createTableHTML(
+                    //         json_data=scenario_data["table_events"], 
+                    //         table_id=scenario_table_events_id
+                    //     )
+                    // );
+                    // convertHTMLTableToDataTableFiltered(table_id=scenario_table_events_id);
+
+                    // // update interevents UI
+                    // const scenario_table_interevents_id = "scenario_table_interevents" + i;
+                    // $("#table_output_scenario_interevents").html(
+                    //     createTableHTML(
+                    //         json_data=v["table_interevents"], 
+                    //         table_id=guage_table_interevents_id
+                    //     )
+                    // );
+                    // convertHTMLTableToDataTableFiltered(table_id=scenario_table_interevents_id);
                 });
 
             },
