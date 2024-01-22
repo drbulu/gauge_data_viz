@@ -51,19 +51,10 @@
         $.post(
             "/definition_tables"
         )
-        .done(function (data) {   
-            
-            console.log("Data type is: " + typeof(data));
-
-            console.log(data); 
-
+        .done(function (data) {               
             if(typeof(data) == "string"){
                 data = JSON.parse(data);
             }
-
-            console.log("Data type is: " + typeof(data));
-            
-            console.log(data);            
 
             // define table ID vars
             const table_ewr_definitions = "table-ewr-dfn";
@@ -93,7 +84,7 @@
         .fail(function(e) {
             console.log("error encountered");
             console.log(e.status);
-            console.log(e.responseText);
+            console.log( JSON.stringify(e) );
         })
         .always(function() {
             
