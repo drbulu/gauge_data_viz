@@ -99,32 +99,32 @@ $(document).ready(function () {
             method: 'POST',
             type: 'POST', // For jQuery < 1.9
             success: function(data){
+                // The Scenario backend potentially supports processing arrays 
+                // of Scehario inputs, however, the UI only supports analysis 
+                // and display of one scenario at a time
+                data = Array.isArray(data) ? data[0] : data;                
+
                 // Data processing
-                $(data).each(function(i, scenario_data){                    
-                    // Assumes that a list of scenarios even though the UI 
-                    // only supports one scenario, non-interactive options 
-                    // could feasibly support batch processing.
-                    $.each(scenario_data, function(k, v) {                        
-                        if (k === "scenario_name" ){
-                            $("#label_scenario_name").val(scenario_data[k]);
-                        } else {
-                            let table_div_id = "#output_table_scenario_" + k;
-                            let data_table_id = "table_scenario_" + k;
-                            $(table_div_id).empty();
-                            $(table_div_id).html(
-                                createTableHTML(
-                                    json_data = v, 
-                                    table_id = data_table_id
-                                )
-                            );
-                            convertHTMLTableToDataTableFiltered(table_id=data_table_id);
-                        };                        
-                    });
+                $.each(data, function(k, v) {                        
+                    if (k === "scenario_name" ){
+                        $("#label_scenario_name").val(data[k]);
+                    } else {
+                        let table_div_id = "#output_table_scenario_" + k;
+                        let data_table_id = "table_scenario_" + k;
+                        $(table_div_id).empty();
+                        $(table_div_id).html(
+                            createTableHTML(
+                                json_data = v, 
+                                table_id = data_table_id
+                            )
+                        );
+                        convertHTMLTableToDataTableFiltered(table_id=data_table_id);
+                    };
                 });
             },
             error: function(e) {
-                console.log(e.status);
-                console.log(e.responseText);
+                console.log("Error! Status code: " + e.status);
+                console.log(JSON.stringify(e));              
             }
         });
 
