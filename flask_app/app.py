@@ -4,7 +4,7 @@ import time
 import shutil
 from flask import Flask, render_template, request, Response
 from werkzeug.utils import secure_filename
-from datetime import datetime
+from datetime import date, datetime
 
 from py_ewr.observed_handling import ObservedHandler
 from py_ewr.scenario_handling import ScenarioHandler
@@ -134,11 +134,19 @@ def search_gauge_observarions():
         "events": ewr_oh.get_all_events,
         "interevents": ewr_oh.get_all_interEvents,
         "successful_events": ewr_oh.get_all_successful_events,
-        "successful_interEvents": ewr_oh.get_all_successful_interEvents,
+        "successful_interevents": ewr_oh.get_all_successful_interEvents,
     }
     # process events data and add to list
     for k, v in result_call_config.items():
-        data_output = v()        
+        data_output = v()
+        # Casting all Data types to String to avoid JSON parse error. See
+        # analyse_scenario_files() function.
+        if type(v) == pd.DataFrame:
+            data_output = data_output.astype(str)
+            gauge_results[k] = data_output.to_dict(orient='records')
+        else:
+            gauge_results[k] = None
+
         gauge_results[k] = data_output.to_dict(orient='records')
 
     return gauge_results
@@ -174,7 +182,7 @@ def analyse_scenario_files():
                 "events": [],
                 "interevents": [],
                 "successful_events": [],
-                "successful_interEvents": []
+                "successful_interevents": []
             }
             
             for filename, model_format in s["metadata"].items():
@@ -190,7 +198,7 @@ def analyse_scenario_files():
                     "events": ewr_sh.get_all_events,
                     "interevents": ewr_sh.get_all_interEvents,
                     "successful_events": ewr_sh.get_all_successful_events,
-                    "successful_interEvents": ewr_sh.get_all_successful_interEvents
+                    "successful_interevents": ewr_sh.get_all_successful_interEvents
                 }
                 # process events data and add to list
                 for k, v in result_call_config.items():                    
@@ -202,7 +210,16 @@ def analyse_scenario_files():
 
             # extract records
             for k, v in scenario_results.items():
-                scenario_results[k] = scenario_results[k].to_dict(orient='records')
+                # Note: Need to cast DataFrame columns as string for proper 
+                # JSON processing of Ajax output. Otherwise, HTTP requests with 
+                # status 200 (OK) result due to client-side JSON parsing error 
+                # that are silent (not reported in browser). 
+                # This might not be memory efficient.. but it seems robust.               
+                if type(v) == pd.DataFrame:
+                    v = v.astype(str)
+                    scenario_results[k] = v.to_dict(orient='records')
+                else:
+                    scenario_results[k] = None
                             
             # Add scenario_name to results. Important to do AFTER data 
             # processing for simpler, more predictable data processing 
