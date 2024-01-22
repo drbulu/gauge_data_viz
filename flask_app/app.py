@@ -141,7 +141,7 @@ def search_gauge_observarions():
         data_output = v()
         # Casting all Data types to String to avoid JSON parse error. See
         # analyse_scenario_files() function.
-        if type(v) == pd.DataFrame:
+        if type(data_output) == pd.DataFrame:
             data_output = data_output.astype(str)
             gauge_results[k] = data_output.to_dict(orient='records')
         else:
