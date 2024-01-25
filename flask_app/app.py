@@ -2,7 +2,8 @@ import os
 import json
 import time
 import shutil
-from flask import Flask, render_template, request, Response
+import pkg_resources
+from flask import Flask, render_template, request
 from werkzeug.utils import secure_filename
 from datetime import date, datetime
 
@@ -57,6 +58,23 @@ def home_page():
 
 @app.route('/definition_tables', methods=["GET", "POST"])
 def description_table():
+    
+    def _create_pypi_html_link(pkg_name):
+        return '"<a target="_blank" href="https://pypi.org/project/' + \
+            '{n}/">{n}</a>"'.format(n=pkg_name)
+    
+    software_package_meta = [
+        {
+            "Name": "EWR tool",
+            "Version": pkg_resources.get_distribution("py-ewr").version,
+            "Package": _create_pypi_html_link("py-ewr")            
+        },
+        {
+            "Name": "MDBA Gauge Getter",
+            "Version": pkg_resources.get_distribution("mdba-gauge-getter").version,
+            "Package": _create_pypi_html_link("mdba-gauge-getter")            
+        }        
+    ]
     dfn_df = pd.read_csv(
         os.path.join(
             app.root_path, 
@@ -75,6 +93,7 @@ def description_table():
     )
     desc_df["LTWP Area"] = desc_df["LTWP Area"].fillna("All LTWP Areas")
     return {
+        "table_software": software_package_meta,
         "table_definitions": dfn_df.to_dict(orient='records'),
         "table_descriptions": desc_df.to_dict(orient='records')
     }

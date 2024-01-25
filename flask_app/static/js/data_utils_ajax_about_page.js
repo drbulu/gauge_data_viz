@@ -9,8 +9,17 @@ $(document).ready(function () {
         }
 
         // define table ID vars
+        const table_ewr_software = "table-ewr-software";
         const table_ewr_definitions = "table-ewr-dfn";
         const table_ewr_descriptions = "table-ewr-desc";
+
+        // populate software version table
+        $('#core_software_version_table_output').html(            
+            createTableHTML(
+                json_data=data["table_software"], 
+                table_id=table_ewr_software
+            )
+        );
         
         // populate definition table
         $("#ewr_table_output_dfn").html(
