@@ -35,7 +35,7 @@ const collectDataFromDataTableByID = function(table_id, select_filtered=false){
     });
 
     // extract data as object list
-    var data_output = []
+    var data_output = [];
     new DataTable.Api( '#' + table_id )
     .rows({search: select_filtered? "applied" : "none"})
     .data()
@@ -67,10 +67,25 @@ const convertHTMLTableToDataTableFiltered = function(table_id){
     });
 
     // transform HTML table to DataTable.
-    $('#'+ table_id).DataTable({
+    // Adding buttons: https://datatables.net/extensions/buttons/
+    // https://datatables.net/extensions/buttons/examples/initialisation/export
+    // https://datatables.net/extensions/buttons/examples/html5/filename
+    var table = $('#'+ table_id).DataTable({
         orderCellsTop: true,
         columns: table_columns,
         fixedHeader: true,
+        dom: 'Bfrtip',
+        buttons:[
+            'copy',
+            {
+                extend: "csv",
+                title: table_id
+            },
+            {
+                extend: 'excel',
+                title: table_id
+            }            
+        ],
         initComplete: function () {
             var api = this.api();
             // For each column
