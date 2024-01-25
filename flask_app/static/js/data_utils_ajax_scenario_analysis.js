@@ -72,6 +72,11 @@ $(document).ready(function () {
         // b. throwing a 405 on post submission to "/"
         // https://stackoverflow.com/a/42517904
         event.preventDefault();
+
+        // disable ALL submit buttons for the whole document on submit
+        // https://stackoverflow.com/a/5691065
+        $(document).find(':input[type=submit]').prop('disabled', true);
+
         var fileFormData = new FormData();
         // // adding plain data as well: https://stackoverflow.com/a/55143036            
         // 1. populate submission metadata 
@@ -126,6 +131,11 @@ $(document).ready(function () {
                 console.log("Error! Status code: " + e.status);
                 console.log(JSON.stringify(e));              
             }
+        })
+        .always(function() {
+            alert( "ANALYSIS complete" );
+            // enable ALL submit buttons for the whole document on response
+            $(document).find(':input[type=submit]').prop('disabled', false);
         });
 
     });

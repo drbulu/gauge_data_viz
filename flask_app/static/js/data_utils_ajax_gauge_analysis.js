@@ -12,6 +12,10 @@ $(document).ready(function () {
 
     // Form submission logic
     $("#gauge-form").submit(function (event) {
+        // disable ALL submit buttons for the whole document
+        // https://stackoverflow.com/a/5691065
+        $(document).find(':input[type=submit]').prop('disabled', true);
+
         var formData = {
             gauge_list: $("#gauge-list-input").val().split(/[ ,;]+/),
             date_start: $("#startdatepicker").val(),
@@ -47,9 +51,9 @@ $(document).ready(function () {
                 console.log(e.responseText);
             })
             .always(function () {
-
+                // enable ALL submit buttons for the whole document on response
+                $(document).find(':input[type=submit]').prop('disabled', false);
             });
-
         event.preventDefault();
 
     });
