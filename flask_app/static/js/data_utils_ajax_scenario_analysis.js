@@ -133,7 +133,6 @@ $(document).ready(function () {
             }
         })
         .always(function() {
-            alert( "ANALYSIS complete" );
             // enable ALL submit buttons for the whole document on response
             $(document).find(':input[type=submit]').prop('disabled', false);
         });
